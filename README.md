@@ -1,2 +1,2 @@
-# React-Redux-test
+# react-redux-test
 あそぶ
