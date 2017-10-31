@@ -1,21 +1,47 @@
+const path = require('path');
+const webpack = require('webpack');
+const BrowserSyncPlugin = require('browser-sync-webpack-plugin')
+
 module.exports = {
-  /* ビルドの起点となるファイルの設定 */
-  entry: './src/app.js',
-  /* 出力されるファイルの設定 */
+  entry: './src/index.js',
   output: {
-    path: `${__dirname}/dist`, // 出力先のパス
-    filename: 'bundle.js' // 出力先のファイル名
+    path: path.resolve('dist/'),
+    filename: 'bundle.js'
   },
-  /* ソースマップをファイル内に出力させる場合は以下を追加 */
-  devtool: 'inline-source-map',
   module: {
-    /* loaderの設定 */
-    loaders: [
+    rules: [
       {
-        test: /\.js$/, // 対象となるファイルの拡張子（正規表現可）
-        exclude: /node_modules/, // 除外するファイル/ディレクトリ（正規表現可）
-        loader: 'babel-loader' // 使用するloader
+        test: /.jsx?$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              'presets': [
+                'env',
+                'react'
+              ],
+              'plugins': [
+                'transform-class-properties'
+              ]
+            }
+          }
+        ]
+      },
+      {
+        test: /.css$/,
+        use: [
+          'style-loader',
+          'css-loader'
+        ]
       }
     ]
-  }
-};
+  },
+  plugins: [
+    // new webpack.optimize.UglifyJsPlugin({ sourceMap: true }),
+    new webpack.optimize.AggressiveMergingPlugin(),
+    new BrowserSyncPlugin({
+        server: { baseDir: ['./dist'] }
+    }),
+  ]
+}
